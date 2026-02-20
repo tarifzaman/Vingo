@@ -1,9 +1,9 @@
 import mongoose from "mongoose"
 
 const userScema = new mongoose.Schema({
-    fullname:{
+    fullName:{
         type: String,
-        reuqired: true
+        required: true
     },
     email:{
         type : String,

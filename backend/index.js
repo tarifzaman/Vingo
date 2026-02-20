@@ -4,7 +4,7 @@ import connectDb from "./config/db.js"; // Import the database connection functi
 import cookieParser from "cookie-parser"; // Middleware to parse cookies from requests
 import authRouter from "./routes/auth.routes.js"; // Import authentication routes
 import cors from "cors"; // Middleware to enable Cross-Origin Resource Sharing
-
+import express from "express";
 const app = express(); // Initialize the Express application
 const port = process.env.PORT || 5000; // Set the server port from .env or default to 5000
 

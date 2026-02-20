@@ -5,10 +5,10 @@ import genToken from "../utils/token.js";
 export const signUp = async (req, res) => {
     try {
         // Destructure user input data from the request body
-        const { fullname, email, password, mobile, role } = req.body;
+        const { fullName, email, password, mobile, role } = req.body;
 
         // Check the database to see if a user with this email already exists
-        const user = await User.findOne({ email });
+        let user = await User.findOne({ email });
         if (user) {
             return res.status(400).json({ message: "User Already exist." });
         }
@@ -30,7 +30,7 @@ export const signUp = async (req, res) => {
         // Start hashing the password for secure storage
         const hashedPassword = await bcrypt.hash(password, 10); 
         user = await User.create({
-            fullname,
+            fullName,
             email,
             role,
             mobile,
