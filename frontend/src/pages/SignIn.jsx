@@ -4,6 +4,9 @@ import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { serverUrl } from "../App";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { app, auth } from "../../firebase";
+import { ClipLoader } from "react-spinners"
 // REMOVED: import { signUp } from "../../../backend/controllers/auth.controller";
 
 function SignIn() {
@@ -16,27 +19,44 @@ function SignIn() {
   const navigate = useNavigate(); // FIXED: Added parentheses ()
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [err , setErr] = useState("")
+  const [loading , setLoading] = useState(false)
 
   const handleSignIn = async () => {
-    try {
-      const result = await axios.post(
-        `${serverUrl}/api/auth/signIn`,
-        {
-          email,
-          password,
-        },
-        { withCredentials: true },
-      );
-      console.log(result);
-      // Optional: navigate("/signin") or show success message here
-    } catch (error) {
-      console.error(
-        "Sign up error:",
-        error.response?.data?.message || error.message,
-      );
-    }
-  };
+    setLoading(true)
+  try {
+    const result = await axios.post(
+      `${serverUrl}/api/auth/signIn`,
+      { email, password },
+      { withCredentials: true }
+    );
+    console.log(result);
+    setErr("");
+    setLoading(false)
+    navigate("/"); // সাকসেস হলে হোম পেজে নিয়ে যাবে
+  } catch (error) {
+    setErr(error.response?.data?.message || "Invalid email or password");
+    setLoading(false)
+  }
+};
 
+const handleGoogleAuth = async () => {
+  try {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider); // try এর ভেতরে আনা হয়েছে
+    const data = await axios.post(
+      `${serverUrl}/api/auth/google-auth`,
+      { email: result.user.email },
+      { withCredentials: true }
+    );
+    console.log(data);
+    navigate("/");
+  } catch (error) {
+    console.error("Google Auth Error:", error.message);
+    setErr(error.response?.data?.message || "Google sign in failed");
+    setLoading(false)
+  }
+};
   return (
     <div
       className="min-h-screen w-full flex items-center justify-center p-4"
@@ -88,17 +108,22 @@ function SignIn() {
               {!showPassword ? <FaRegEye /> : <FaRegEyeSlash />}
             </button>
           </div>
-          <div className="text-right mb-4 font-medium text-[#ff4d2d] cursor-pointer" onClick={()=>navigate("/forgot-password")} >Forgot Password ?</div>
+          <div
+            className="text-right mb-4 font-medium text-[#ff4d2d] cursor-pointer"
+            onClick={() => navigate("/forgot-password")}
+          >
+            Forgot Password ?
+          </div>
         </div>
 
         <button
           className="w-full mt-4 flex items-center justify-center gap-2 border rounded-lg px-4 py-2 transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer"
-          onClick={handleSignIn}
+          onClick={handleSignIn} disabled={loading}
         >
-          Sign In
+          {loading?<ClipLoader size={20}/> : "Sign In"}
         </button>
-
-        <button className="w-full mt-4 flex items-center justify-center gap-2 border rounded-lg px-4 py-2 transition duration-200 border-gray-400 hover:bg-gray-100 cursor-pointer">
+        {err && <p className="text-red-500">*{err}</p>}
+        <button className="w-full mt-4 flex items-center justify-center gap-2 border rounded-lg px-4 py-2 transition duration-200 border-gray-400 hover:bg-gray-100 cursor-pointer" onClick={handleGoogleAuth}>
           <FcGoogle size={20} />
           <span>Sign up with Google</span>
         </button>
@@ -116,3 +141,4 @@ function SignIn() {
 }
 
 export default SignIn;
+
