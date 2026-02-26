@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser"; // Middleware to parse cookies from re
 import authRouter from "./routes/auth.routes.js"; // Import authentication routes
 import cors from "cors"; // Middleware to enable Cross-Origin Resource Sharing
 import express from "express";
+import userRouter from "./routes/user.routes.js";
 const app = express(); // Initialize the Express application
 const port = process.env.PORT || 5000; // Set the server port from .env or default to 5000
 
@@ -19,6 +20,7 @@ app.use(cookieParser()); // Use cookie-parser middleware
 
 // Define the base path for authentication routes
 app.use("/api/auth", authRouter);
+app.use("/api/user", userRouter);
 
 // Start the server and connect to the database
 app.listen(port, () => {
