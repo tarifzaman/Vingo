@@ -3,8 +3,10 @@ import { Routes, Route } from 'react-router-dom'; // Added Route import
 import SignUp from './pages/SignUp';
 import SignIn from './pages/SignIn';
 import ForgotPassword from './pages/ForgotPassword';
+import useGetCurrentUser from './hooks/useGetCurrentUser';
 export const serverUrl = "http://localhost:8000"
 const App = () => {
+  useGetCurrentUser()
   return (
     <Routes>
       {/* The path is the URL in the browser, element is the React UI component */}
